@@ -34,7 +34,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         ( phxSocket, phxCmd ) =
-            Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+            Phoenix.Socket.init "ws://emiluren.se:80/socket/websocket"
                 |> Phoenix.Socket.on "new_msg" "room:lobby" ReceiveChatMessage
                 |> Phoenix.Socket.join (Phoenix.Channel.init "room:lobby")
 
