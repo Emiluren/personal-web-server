@@ -11,7 +11,7 @@ config :chatt_app,
 
 # Configures the endpoint
 config :chatt_app, ChattApp.Endpoint,
-  url: [host: "localhost"],
+url: [host: "http://www.emiluren.se"],
   secret_key_base: "hh50ZTcyVLDDj1RKbwIBNWCFj0zRlztTmUPp7rAUW6RqS2aYESEOW8xb34M6MSlI",
   render_errors: [view: ChattApp.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ChattApp.PubSub,
