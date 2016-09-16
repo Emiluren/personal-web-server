@@ -9,11 +9,17 @@ import Json.Decode as JD exposing ((:=))
 import Phoenix.Socket exposing (Socket)
 import Phoenix.Channel
 import Phoenix.Push
+import Material
+import Material.Scheme
+import Material.Button as Button
+import Material.Textfield as Textfield
+import Material.Options exposing (css)
 import Debug
 
 
 type Msg
     = PhoenixMsg (Phoenix.Socket.Msg Msg)
+    | Mdl (Material.Msg Msg)
     | SetNewMessage String
     | SendMessage
     | ReceiveChatMessage JE.Value
@@ -23,6 +29,7 @@ type alias Model =
     { phxSocket : Socket Msg
     , currentMessage : String
     , messages : List String
+    , mdl : Material.Model
     }
 
 
@@ -43,6 +50,7 @@ init =
         { phxSocket = phxSocket
         , currentMessage = ""
         , messages = []
+        , mdl = Material.model
         }
             ! [ Cmd.map PhoenixMsg phxCmd ]
 
@@ -56,14 +64,17 @@ chatMessageDecoder =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        PhoenixMsg msg ->
+        PhoenixMsg msg' ->
             let
                 ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.update msg model.phxSocket
+                    Phoenix.Socket.update msg' model.phxSocket
             in
                 ( { model | phxSocket = phxSocket }
                 , Cmd.map PhoenixMsg phxCmd
                 )
+
+        Mdl msg' ->
+            Material.update msg' model
 
         ReceiveChatMessage raw ->
             case JD.decodeValue chatMessageDecoder raw of
@@ -116,11 +127,15 @@ messageList messages =
 view : Model -> Html Msg
 view model =
     div []
-        <| (messageList model.messages)
-        ++ [ form [ onSubmit SendMessage ]
-                [ input [ onInput SetNewMessage, value model.currentMessage ] []
-                ]
-           ]
+        [ div []
+            (messageList model.messages)
+        , form [ onSubmit SendMessage ]
+            [ Textfield.render Mdl
+                [ 0 ]
+                model.mdl
+                [ Textfield.onInput SetNewMessage, Textfield.value model.currentMessage ]
+            ]
+        ]
 
 
 main : Program Never
