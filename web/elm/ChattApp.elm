@@ -44,11 +44,12 @@ init : ( Model, Cmd Msg )
 init =
     let
         ( phxSocket, phxCmd ) =
-            Phoenix.Socket.init "ws://emiluren.se:80/socket/websocket"
+            Phoenix.Socket.init "wss://emiluren.se:443/socket/websocket"
                 |> Phoenix.Socket.on "new_msg" "room:lobby" ReceiveChatMessage
                 |> Phoenix.Socket.join (Phoenix.Channel.init "room:lobby")
 
-        -- |> Phoenix.Socket.withDebug
+        -- |> Phoenix.Socket.withDebug -- must be placed higher up to work
+        -- but then it would mess with Elm format
     in
         { phxSocket = phxSocket
         , currentMessage = ""
