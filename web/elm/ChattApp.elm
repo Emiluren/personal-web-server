@@ -1,7 +1,7 @@
 module ChattApp exposing (..)
 
-import Html exposing (Html, text, div, input, br, form)
-import Html.Attributes exposing (value)
+import Html exposing (Html, h1, text, div, input, br, form)
+import Html.Attributes exposing (style, value)
 import Html.Events exposing (onInput, onSubmit)
 import Html.App
 import Json.Encode as JE
@@ -13,8 +13,11 @@ import Material
 import Material.Scheme
 import Material.Button as Button
 import Material.Textfield as Textfield
+import Material.List as Lists
+import Material.Layout as Layout
 import Material.Options exposing (css)
 import Debug
+import Array exposing (Array)
 
 
 type Msg
@@ -28,7 +31,7 @@ type Msg
 type alias Model =
     { phxSocket : Socket Msg
     , currentMessage : String
-    , messages : List String
+    , messages : Array String
     , mdl : Material.Model
     }
 
@@ -49,7 +52,7 @@ init =
     in
         { phxSocket = phxSocket
         , currentMessage = ""
-        , messages = []
+        , messages = Array.empty
         , mdl = Material.model
         }
             ! [ Cmd.map PhoenixMsg phxCmd ]
@@ -79,7 +82,12 @@ update msg model =
         ReceiveChatMessage raw ->
             case JD.decodeValue chatMessageDecoder raw of
                 Ok chatMessage ->
-                    ( { model | messages = chatMessage.body :: model.messages }, Cmd.none )
+                    ( { model
+                        | messages =
+                            Array.push chatMessage.body model.messages
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, Cmd.none )
@@ -114,21 +122,37 @@ subscriptions model =
 
 showMessage : String -> Html a
 showMessage str =
-    div []
-        [ Html.text str
+    Lists.li []
+        [ Lists.content []
+            [ Lists.avatarIcon "photo_camera" []
+            , text str
+            ]
         ]
 
 
-messageList : List String -> List (Html a)
+messageList : List String -> Html a
 messageList messages =
-    List.map showMessage messages
+    Lists.ul [] <| List.map showMessage messages
 
 
 view : Model -> Html Msg
 view model =
-    div []
+    Layout.render Mdl
+        model.mdl
+        [ Layout.fixedHeader
+        ]
+        { header = [ h1 [ style [ ( "padding", "2rem" ) ] ] [ text "Emiluren.se" ] ]
+        , drawer = []
+        , tabs = ( [], [] )
+        , main = [ viewBody model ]
+        }
+
+
+viewBody : Model -> Html Msg
+viewBody model =
+    div [ style [ ( "padding", "2rem" ) ] ]
         [ div []
-            (messageList model.messages)
+            [ (messageList <| Array.toList model.messages) ]
         , form [ onSubmit SendMessage ]
             [ Textfield.render Mdl
                 [ 0 ]
