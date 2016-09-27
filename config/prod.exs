@@ -13,9 +13,13 @@ use Mix.Config
 # which you typically run after static files are built.
 config :chatt_app, ChattApp.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "http://www.emiluren.se", port: 80],
+  url: [host: "www.emiluren.se", port: 443],
+  force_ssl: [hsts: true, port: 443],
   check_origin: false,
-  cache_static_manifest: "priv/static/manifest.json"
+  cache_static_manifest: "priv/static/manifest.json",
+  https: [port: 8443,
+          keyfile: "priv/privkey.pem",
+          certfile: "priv/cert.pem"]
 
 # Do not print debug messages in production
 config :logger, level: :info
