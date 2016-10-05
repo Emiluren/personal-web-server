@@ -29,3 +29,16 @@ npm-debug.log
 web/static/vendor/chattapp.js
 web/elm/elm-stuff/
 *.pem
+
+# Clojurescript
+pom.xml
+*jar
+/lib/
+/classes/
+/out/
+/release/
+/target/
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.repl*

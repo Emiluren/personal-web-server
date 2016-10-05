@@ -19,6 +19,12 @@ defmodule ChattApp.Router do
     get "/", PageController, :index
   end
 
+  scope "/mixer", ChattApp do
+    pipe_through :browser
+
+    get "/", MusicController, :index
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", ChattApp do
   #   pipe_through :api
